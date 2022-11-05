@@ -1,5 +1,14 @@
+import styles from "./App.module.css";
+import "./global.css";
+
 function App() {
-  return <div className="App">Hello Ignite Feed</div>;
+  return (
+    <div>
+      <div className={styles.wrapper}>
+        <main></main>
+      </div>
+    </div>
+  );
 }
 
 export default App;
