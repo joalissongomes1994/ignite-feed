@@ -64,7 +64,6 @@
 
 .commentBox footer button {
   background: transparent;
-  color: var(--gray-400);
   border: 0;
   cursor: pointer;
 
@@ -73,6 +72,14 @@
 
   transition: color 0.1s;
   border-radius: 2px;
+}
+
+.hasLike {
+  color: var(--green-500);
+}
+
+.noLike {
+  color: var(--gray-400);
 }
 
 .commentBox footer button:hover {
