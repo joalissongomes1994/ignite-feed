@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { format, formatDistanceToNow } from "date-fns";
 import ptBR from "date-fns/esm/locale/pt-BR/index.js";
 import { Comment } from "./Comment";
@@ -8,6 +8,9 @@ import { Avatar } from "./Avatar";
 import styles from "./Post.module.css";
 
 export function Post({ author, content, publishedAt }) {
+  const [comments, setComments] = useState([]);
+  const [newCommentText, setNewCommentText] = useState("");
+
   const publishedDateFormatted = format(
     publishedAt,
     "d 'de' LLLL 'às' HH:mm'h'",
@@ -18,6 +21,17 @@ export function Post({ author, content, publishedAt }) {
     locale: ptBR,
     addSuffix: true,
   });
+
+  function handleCreateNewComment(event) {
+    event.preventDefault();
+
+    setComments([...comments, newCommentText]);
+    setNewCommentText("");
+  }
+
+  function handleNewCommentChange(event) {
+    setNewCommentText(event.target.value);
+  }
 
   return (
     <article className={styles.post}>
@@ -39,8 +53,8 @@ export function Post({ author, content, publishedAt }) {
       </header>
 
       <div className={styles.content}>
-        {content.map((item, index) => (
-          <React.Fragment key={index}>
+        {content.map((item) => (
+          <React.Fragment key={item.content}>
             {item.type === "paragraph" && <p>{item.content}</p>}
             {item.type === "link" && (
               <p>
@@ -56,10 +70,15 @@ export function Post({ author, content, publishedAt }) {
         </p>
       </div>
 
-      <form className={styles.commentForm}>
+      <form onSubmit={handleCreateNewComment} className={styles.commentForm}>
         <strong>Deixe seu feedback</strong>
 
-        <textarea placeholder="Deixe seu comentário" />
+        <textarea
+          name="comment"
+          value={newCommentText}
+          onChange={handleNewCommentChange}
+          placeholder="Deixe seu comentário"
+        />
 
         <footer>
           <button type="submit">Comentar</button>
@@ -67,9 +86,10 @@ export function Post({ author, content, publishedAt }) {
       </form>
 
       <div className={styles.commentList}>
-        <Comment />
-        <Comment />
-        <Comment />
+        {comments.length > 0 &&
+          comments
+            .map((comment) => <Comment key={comment} content={comment} />)
+            .reverse()}
       </div>
     </article>
   );
