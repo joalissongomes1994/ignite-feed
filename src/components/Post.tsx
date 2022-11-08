@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { ChangeEvent, FormEvent, InvalidEvent, useState } from "react";
 import { format, formatDistanceToNow } from "date-fns";
 import ptBR from "date-fns/esm/locale/pt-BR/index.js";
 import { Comment } from "./Comment";
@@ -7,9 +7,26 @@ import { Avatar } from "./Avatar";
 
 import styles from "./Post.module.css";
 
-export function Post({ author, content, publishedAt }) {
-  const [comments, setComments] = useState([]);
-  const [newCommentText, setNewCommentText] = useState("");
+interface Author {
+  avatarUrl: string,
+  name: string, 
+  role: string
+}
+
+interface Content {
+  type: "paragraph" | "link",
+  content: string
+}
+
+interface PostProps {
+  author: Author,
+  content: Content[],
+  publishedAt: Date
+}
+
+export function Post({ author, content, publishedAt }: PostProps) {
+  const [comments, setComments] = useState<string[]>([]);
+  const [newCommentText, setNewCommentText] = useState<string>("");
 
   const publishedDateFormatted = format(
     publishedAt,
@@ -22,23 +39,23 @@ export function Post({ author, content, publishedAt }) {
     addSuffix: true,
   });
 
-  function handleCreateNewComment(event) {
+  function handleCreateNewComment(event: FormEvent) {
     event.preventDefault();
 
     setComments([...comments, newCommentText]);
     setNewCommentText("");
   }
 
-  function handleNewCommentChange(event) {
+  function handleNewCommentChange(event: ChangeEvent<HTMLTextAreaElement>) {
     event.target.setCustomValidity("");
     setNewCommentText(event.target.value);
   }
 
-  function handleNewCommentInvalid(event) {
+  function handleNewCommentInvalid(event: InvalidEvent<HTMLTextAreaElement>) {
     event.target.setCustomValidity("Este campo é obrigatório!");
   }
 
-  function deleteComment(commentToDelete) {
+  function deleteComment(commentToDelete: string) {
     const commentWithoutDeleteOne = comments.filter(
       (comment) => commentToDelete !== comment
     );
@@ -69,8 +86,10 @@ export function Post({ author, content, publishedAt }) {
       <div className={styles.content}>
         {content.map((item) => (
           <React.Fragment key={item.content}>
-            {item.type === "paragraph" && <p>{item.content}</p>}
-            {item.type === "link" && (
+            {item.type === "paragraph" ? 
+            (
+              <p>{item.content}</p>
+            ):(
               <p>
                 <a href="#">{item.content}</a>
               </p>
